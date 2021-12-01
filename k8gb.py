@@ -14,6 +14,8 @@ red = "ffc1b6"
 # add k8gb as black box first
 # then zoom in into it and show different components: coredns, externaldns
 
+# revealjs plugin https://github.com/RickDW/manim-revealjs
+
 class FailOver(MovingCameraScene):
     config = {
         "font": "Noto Sans",
@@ -21,25 +23,6 @@ class FailOver(MovingCameraScene):
         "font_color": BLACK,
         "boxes_color": BLACK,
         "color": BLACK,
-    }
-
-    arguments = {
-        "network_size": 1,
-        "network_position": ORIGIN,
-        "layer_sizes": [7, 9, 9, 5, 2],
-        "layer_buff": LARGE_BUFF,
-        "neuron_radius": 0.15,
-        "neuron_color": LIGHT_GREY,
-        "neuron_width": 3,
-        "neuron_fill_color": BLACK,
-        "neuron_fill_opacity": 1,
-        "neuron_buff": MED_SMALL_BUFF,
-        "edge_color": LIGHT_GREY,
-        "edge_width": 1.25,
-        "edge_opacity": 0.75,
-        "layer_label_color": WHITE,
-        "layer_label_size": 0.5,
-        "neuron_label_color": WHITE
     }
 
     def construct(self):
@@ -160,18 +143,35 @@ class FailOver(MovingCameraScene):
         k8s_text13.next_to(k8s1, UP)
         k8s_text23.next_to(k8s2, UP)
         self.play(TransformMatchingShapes(k8s_text12, k8s_text13), TransformMatchingShapes(k8s_text22, k8s_text23))
+        # route_bubble = SpeechBubble()
 
         self.say_scaled("Let's look how failover strategy works")
         # show tux again
         happy_tux2 = ImageMobject(fr"images/happy_tux.png")
         happy_tux2.scale(0.7)
         happy_tux2.move_to(self.camera.frame.get_left()).shift(RIGHT*1.5+DOWN*3)
-        self.play(FadeIn(happy_tux2))
 
-        dot_t = dot1.move_to(happy_tux2.get_edge_center(RIGHT)).copy()
+        dot_dns = Dot(color=RED, radius=DEFAULT_DOT_RADIUS*2).move_to(self.camera.frame.get_left()).shift(RIGHT*1.5+UP*1)
+        dot_http = Dot(color=BLUE, radius=DEFAULT_DOT_RADIUS*2).next_to(dot_dns, direction=DOWN, buff=0.5)
+        dot_dns_text = Text("dns resolution", font_size=24, color=RED, font=FailOver.config["font"]).next_to(dot_dns, direction=RIGHT, buff=0.7)
+        dot_http_text = Text("HTTP request", font_size=24, color=BLUE, font=FailOver.config["font"]).next_to(dot_http, direction=RIGHT, buff=0.7)
+        dot_legend = VGroup(dot_dns, dot_http, dot_dns_text, dot_http_text)
+        self.play(FadeIn(happy_tux2, dot_legend), run_time=0.5)
+
+        dot_t = dot1.scale(2).move_to(happy_tux2.get_edge_center(RIGHT)).copy()
+        dot_moving = dot_t.copy()
         dot_r = dot_t.copy().move_to(route)
         dot_c1 = dot_t.copy().move_to(pod11)
         dot_c2 = dot_t.copy().move_to(pod21)
+        self.play(Transform(dot_moving.set_color(RED), dot_r.set_color(RED)))
+        self.play(Transform(dot_moving.set_color(RED), dot_t.set_color(RED)))
+        self.wait(0.4)
+        self.play(Transform(dot_moving.set_color(BLUE), dot_c1.set_color(BLUE)), run_time=0.5)
+        self.play(Transform(dot_moving.set_color(BLUE), dot_t.set_color(BLUE)), run_time=0.5)
+        self.play(Transform(dot_moving.set_color(BLUE), dot_c1.set_color(BLUE)), run_time=0.5)
+        self.play(Transform(dot_moving.set_color(BLUE), dot_t.set_color(BLUE)), run_time=0.5)
+        self.play(Transform(dot_moving.set_color(BLUE), dot_c1.set_color(BLUE)), run_time=0.5)
+        self.play(Transform(dot_moving.set_color(BLUE), dot_t.set_color(BLUE)), run_time=0.5)
 
     def say(self, what, ephemeral=True):
         t = Text(what, color=FailOver.config["font_color"], font_size=23, font=FailOver.config["font"])
