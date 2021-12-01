@@ -63,7 +63,7 @@ class FailOver(MovingCameraScene):
         self.wait(1)
 
         happy_tux = ImageMobject(fr"images/happy_tux.png")
-        happy_tux.set_height(1.3)
+        happy_tux.set_height(1.3) # deprecated
         happy_tux.to_edge(LEFT)
         self.play(FadeIn(happy_tux))
         dot1 = Dot(color=self.cfg["http_color"])
@@ -88,7 +88,7 @@ class FailOver(MovingCameraScene):
         self.play(Transform(dot1, dot2))
 
         sad_tux = ImageMobject(fr"images/sad_tux.png")
-        sad_tux.set_height(1.3)
+        sad_tux.set_height(1.3) # deprecated
         sad_tux.to_edge(LEFT)
         self.play(Transform(happy_tux, sad_tux))
         self.play(FadeOut(dot1, sad_tux))
@@ -162,6 +162,8 @@ class FailOver(MovingCameraScene):
         self.play(Write(dns_bubble_r2), run_time=0.5)
         self.play(Write(ttl_text), run_time=1)
 
+        # todo: consider zooming in onto dns records and show details similar to dig returns
+
         self.say_scaled("Let's look how failover strategy works")
         # show tux again
         happy_tux2 = ImageMobject(fr"images/happy_tux.png")
@@ -220,12 +222,21 @@ class FailOver(MovingCameraScene):
         self.play(Transform(dot_moving.set_color(self.cfg["dns_color"]), dot_r.set_color(self.cfg["dns_color"])))
         self.play(Transform(dot_moving.set_color(self.cfg["dns_color"]), dot_t.set_color(self.cfg["dns_color"])))
         self.say_scaled("and starts communicating with the correct cluster")
-        self.play(Transform(dot_moving.set_color(self.cfg["http_color"]), dot_c2.set_color(self.cfg["http_color"])), run_time=0.5)
-        self.play(Transform(dot_moving.set_color(self.cfg["http_color"]), dot_t.set_color(self.cfg["http_color"])), run_time=0.5)
+        self.play(Transform(dot_moving.set_color(self.cfg["http_color"]), dot_c2.set_color(self.cfg["http_color"])))
+        self.play(Transform(dot_moving.set_color(self.cfg["http_color"]), dot_t.set_color(self.cfg["http_color"])))
+        self.play(Transform(dot_moving.set_color(self.cfg["http_color"]), dot_c2.set_color(self.cfg["http_color"])))
+        self.play(Transform(dot_moving.set_color(self.cfg["http_color"]), dot_t.set_color(self.cfg["http_color"])))
+        
         # make tux happy
         self.play(Transform(happy_tux2, happy_tux2_orig), run_time=1.5)
-        self.play(Transform(dot_moving.set_color(self.cfg["http_color"]), dot_c2.set_color(self.cfg["http_color"])), run_time=0.5)
-        self.play(Transform(dot_moving.set_color(self.cfg["http_color"]), dot_t.set_color(self.cfg["http_color"])), run_time=0.5)
+        self.say_scaled("Cluster in us took over all the communication and tux is happy again")
+        self.wait()
+        self.play(
+            *[FadeOut(mob)for mob in self.mobjects]
+        )
+        self.play(FadeIn(ImageMobject(fr"images/k8gb-logo.png").scale(2.5)))
+        self.play(Write(Text("k8gb.io", color=self.cfg["font_color"], font_size=55, font=self.cfg["font"]).shift(DOWN*2)), run_time=1.5)
+        self.wait()
 
 
     def say(self, what, ephemeral=True):
