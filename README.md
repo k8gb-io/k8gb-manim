@@ -1,6 +1,7 @@
 # k8gb animations
 
-These animations use the Manim [community version](https://www.manim.community/) of the library ([code](https://github.com/ManimCommunity/manim)), you can install it by following the instruction for your OS on their web site.
+These animations use the Manim [community version](https://www.manim.community/) of the library ([code](https://github.com/ManimCommunity/manim)),
+you can install it by following the instructions for your OS on their web site.
 
 ## Rendering the animations
 
