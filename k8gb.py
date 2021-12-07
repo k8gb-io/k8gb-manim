@@ -99,7 +99,7 @@ class FailOver(MovingCameraScene):
 
         # zoom out
         self.play(self.camera.frame.animate.scale(2))
-        self.wait(1)
+        self.wait(0.2)
 
         k8s2 = Rectangle(width=8.0, height=5.0, color=self.cfg["boxes_color"])
         k8s_text2 = Text("Kubernetes", color=self.cfg["font_color"], font_size=23, font=self.cfg["font"])
@@ -125,7 +125,7 @@ class FailOver(MovingCameraScene):
         k8s_text12.next_to(k8s1, UP)
         k8s_text22.next_to(k8s2, UP)
         self.play(TransformMatchingShapes(k8s_text1, k8s_text12), TransformMatchingShapes(k8s_text2, k8s_text22))
-        self.wait(1)
+        self.wait(0.5)
 
         # add k8gb
         self.say_scaled("Add k8gb operator")
@@ -147,22 +147,45 @@ class FailOver(MovingCameraScene):
         k8s_text13.next_to(k8s1, UP)
         k8s_text23.next_to(k8s2, UP)
         self.play(TransformMatchingShapes(k8s_text12, k8s_text13), TransformMatchingShapes(k8s_text22, k8s_text23))
+
+        self.say_scaled("and edge DNS server")
         route_bubble = self.speech_bubble().scale(0.9).next_to(route, direction=RIGHT, buff=0)
         self.play(Create(route_bubble))
         dns_bubble_title = Text("app.example.com", color=self.cfg["dns_color"], font_size=25, font=self.cfg["font"])
         dns_bubble_title.next_to(route_bubble, direction=UP, buff=0.1).shift(RIGHT*0.3)
         self.play(Write(dns_bubble_title))
-        dns_bubble_r1 = Text("192.168.0.1 (node 1 @ eu)", color=self.cfg["dns_color"], font_size=18, font=self.cfg["font"])
-        dns_bubble_r2 = Text("192.168.0.2 (node 2 @ eu)", color=self.cfg["dns_color"], font_size=18, font=self.cfg["font"])
-        dns_bubble_r1.next_to(dns_bubble_title, direction=DOWN, buff=0.4)
-        dns_bubble_r2.next_to(dns_bubble_r1, direction=DOWN, buff=0.2)
+        dns_bubble_r1 = Text("192.168.0.1 (node @ eu)", color=self.cfg["dns_color"], font_size=17, font=self.cfg["font"])
+        # dns_bubble_r2 = Text("192.168.0.2 (node 2 @ eu)", color=self.cfg["dns_color"], font_size=18, font=self.cfg["font"])
+        dns_bubble_r1.next_to(dns_bubble_title, direction=DOWN, buff=0.4).shift(RIGHT*0.1)
+        # dns_bubble_r2.next_to(dns_bubble_r1, direction=DOWN, buff=0.2)
         ttl_text = Text("(TTL = 30sec)", color=self.cfg["dns_color"], font_size=25, font=self.cfg["font"])
         ttl_text.next_to(route_bubble, direction=RIGHT)
         self.play(Write(dns_bubble_r1), run_time=0.5)
-        self.play(Write(dns_bubble_r2), run_time=0.5)
+        # self.play(Write(dns_bubble_r2), run_time=0.5)
         self.play(Write(ttl_text), run_time=1)
+        self.camera.frame.save_state()
+        self.play(self.camera.frame.animate.scale(0.35).move_to(route_bubble))
+        self.wait(0.2)
+        detail_font = 11
+        dns_bubble_r1_detailed1 = Text(";; AUTHORITY SECTION:", color=self.cfg["dns_color"], font_size=detail_font, font=self.cfg["font"])
+        dns_bubble_r1_detailed2 = Text("example.com. 30 IN NS gslb-ns-us-app.example.com.", color=self.cfg["dns_color"], font_size=detail_font, font=self.cfg["font"])
+        dns_bubble_r1_detailed3 = Text("example.com. 30 IN NS gslb-ns-eu-app.example.com.", color=self.cfg["dns_color"], font_size=detail_font, font=self.cfg["font"])
+        dns_bubble_r1_detailed4 = Text(";; ADDITIONAL SECTION:", color=self.cfg["dns_color"], font_size=detail_font, font=self.cfg["font"])
+        dns_bubble_r1_detailed5 = Text("gslb-ns-us-app.example.com. 30 IN A 10.0.0.1", color=self.cfg["dns_color"], font_size=detail_font, font=self.cfg["font"])
+        dns_bubble_r1_detailed6 = Text("gslb-ns-eu-app.example.com. 30 IN A 10.0.1.1", color=self.cfg["dns_color"], font_size=detail_font, font=self.cfg["font"])
+        detailed_dns = VGroup(dns_bubble_r1_detailed1,dns_bubble_r1_detailed2,dns_bubble_r1_detailed3,dns_bubble_r1_detailed4,dns_bubble_r1_detailed5,dns_bubble_r1_detailed6)
+        detailed_dns.arrange(DOWN, center=False, buff=0.1, aligned_edge=LEFT)
+        detailed_dns.next_to(dns_bubble_title, direction=DOWN, buff=0.3).shift(RIGHT*0.2)
+        self.play(FadeOut(dns_bubble_r1))
+        self.play(FadeIn(detailed_dns))
 
-        # todo: consider zooming in onto dns records and show details similar to dig returns
+        self.say_zoomed("In fact it's a glue record that enables the zone delegation")
+        self.say_zoomed("Route53 is recursive DNS server delegating the calls for our domain to one of our internal CoreDNS servers")
+        self.say_zoomed("K8gb controller makes sure that CoreDNS contains updated DNS records based on the load balancing strategy")
+        self.say_zoomed("For the sake of simplicity, let's pretend it can directly resolve app.example.com to one of the k8s nodes")
+        self.play(FadeOut(detailed_dns))
+        self.play(FadeIn(dns_bubble_r1))
+        self.play(Restore(self.camera.frame))
 
         self.say_scaled("Let's look how failover strategy works")
         # show tux again
@@ -208,14 +231,14 @@ class FailOver(MovingCameraScene):
         # todo: display light bulp or shake the icon
         self.say_scaled("and updates the DNS records to point to cluster 2")
         # change the records in the bubble
-        dns_bubble_r3 = Text("192.168.1.1 (node 1 @ us)", color=self.cfg["dns_color"], font_size=18, font=self.cfg["font"])
-        dns_bubble_r4 = Text("192.168.1.2 (node 2 @ us)", color=self.cfg["dns_color"], font_size=18, font=self.cfg["font"])
-        dns_bubble_r3.next_to(dns_bubble_title, direction=DOWN, buff=0.4)
-        dns_bubble_r4.next_to(dns_bubble_r1, direction=DOWN, buff=0.2)
+        dns_bubble_r3 = Text("192.168.1.1 (node @ us)", color=self.cfg["dns_color"], font_size=17, font=self.cfg["font"])
+        # dns_bubble_r4 = Text("192.168.1.2 (node 2 @ us)", color=self.cfg["dns_color"], font_size=18, font=self.cfg["font"])
+        dns_bubble_r3.next_to(dns_bubble_title, direction=DOWN, buff=0.4).shift(RIGHT*0.1)
+        # dns_bubble_r4.next_to(dns_bubble_r1, direction=DOWN, buff=0.2)
         self.play(Unwrite(dns_bubble_r1), run_time=0.5)
-        self.play(Unwrite(dns_bubble_r2), run_time=0.5)
+        # self.play(Unwrite(dns_bubble_r2), run_time=0.5)
         self.play(Write(dns_bubble_r3), run_time=0.5)
-        self.play(Write(dns_bubble_r4), run_time=0.5)
+        # self.play(Write(dns_bubble_r4), run_time=0.5)
 
         self.say_scaled("When TTL expires, tux creates another DNS request")
 
@@ -239,6 +262,16 @@ class FailOver(MovingCameraScene):
         self.wait()
 
 
+    def say_zoomed(self, what, ephemeral=True):
+        t = Text(what, color=self.cfg["font_color"], font_size=14, font=self.cfg["font"])
+        t.move_to(self.camera.frame.get_right() + self.camera.frame.get_bottom()).shift(UP*4.5+LEFT*(4.8+t.width*0.48))
+        self.play(Write(t))
+        if ephemeral:
+            self.wait(1)
+            self.play(FadeOut(t))
+        else:
+            return t
+
     def say(self, what, ephemeral=True):
         t = Text(what, color=self.cfg["font_color"], font_size=23, font=self.cfg["font"])
         t.to_edge(DR, buff=0.5)
@@ -261,11 +294,11 @@ class FailOver(MovingCameraScene):
 
     def speech_bubble(self):
         Hexagon = [(0,0,0),
-            (1,-0.1,0),
-            (1,0.7,0),
-            (5,0.7,0),
-            (5,-1.7,0),
-            (1,-1.7,0),
-            (1,-0.55,0),
+            (1.0,-0.1, 0),
+            (1.0, 0.7, 0),
+            (5.9, 0.7, 0),
+            (5.9,-1.7, 0),
+            (1.0,-1.7, 0),
+            (1.0,-0.55,0),
         ]
         return Polygon(*Hexagon, color=self.cfg["dns_color"])
