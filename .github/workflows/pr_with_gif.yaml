@@ -23,7 +23,7 @@ jobs:
         with:
           community_ver: true
           source_file: k8gb.py
-        args: "-qh --format=gif"
+          args: "-qh --format=gif"
       - name: Prepend the latest changes to CHANGELOG.md
         run: |
           tree ${{ steps.renderer.outputs.video_path }}
