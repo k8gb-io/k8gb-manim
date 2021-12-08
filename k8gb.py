@@ -81,18 +81,19 @@ class FailOver(MovingCameraScene):
         self.play(FadeOut(user_interaction))
 
         t = self.say("Oh no! Application went down", False)
-        self.play(FadeOut(pod_text12))
+        self.play(FadeOut(pod_text12), run_time=0.3)
         self.remove(pod_text11)
-        self.play(FadeOut(pod12), run_time=0.5)
-        self.play(FadeOut(pod11), run_time=0.5)
+        self.play(FadeOut(pod12), run_time=0.6)
+        self.play(FadeOut(pod11), run_time=0.3)
+        dep_text13 = Text("App Deployment (0 pods)", color=self.cfg["font_color"], font_size=20, font=self.cfg["font"]).next_to(dep1, UP)
+        self.play(Transform(dep_text12, dep_text13), run_time=0.7)
         self.play(Transform(dot1, dot2))
 
         sad_tux = ImageMobject(fr"images/sad_tux.png")
         sad_tux.set_height(1.3) # deprecated
         sad_tux.to_edge(LEFT)
         self.play(Transform(happy_tux, sad_tux))
-        self.play(FadeOut(dot1, sad_tux))
-        self.play(FadeOut(t))
+        self.play(FadeOut(t,dot1), run_time=0.5)
         self.say("Let's see how k8gb can help here")
         self.say("First we need to introduce some redundancy, so let's scale up")
         self.play(FadeOut(happy_tux), run_time=0.5)
@@ -115,10 +116,11 @@ class FailOver(MovingCameraScene):
         pod_text22 = Text("</>", color=self.cfg["http_color"], font_size=35, font=self.cfg["code_font"], weight=BOLD)
         pod_text22.move_to(pod22)
 
-        cl1 = Group(k8s1,k8s_text1,dep1, dep_text12, pod11, pod12, pod_text12)
+        dep_text14 = Text("App Deployment (2 pods)", color=self.cfg["font_color"], font_size=20, font=self.cfg["font"]).next_to(dep1, UP)
+        cl1 = Group(k8s1,k8s_text1,dep1, dep_text14, pod11, pod12, pod_text12)
         cl2 = Group(k8s2,k8s_text2,dep2, dep_text2, pod21, pod22, pod_text22)
         self.add(cl2)
-        self.remove(pod_text11)
+        self.remove(pod_text11, dep_text12)
         self.play(cl2.animate.move_to(RIGHT*4.6 + UP), cl1.animate.move_to(LEFT* 4.6 + UP))
         k8s_text12 = Text("Cluster 1 (eu)", color=self.cfg["font_color"], font_size=23, font=self.cfg["font"])
         k8s_text22 = Text("Cluster 2 (us)", color=self.cfg["font_color"], font_size=23, font=self.cfg["font"])
@@ -129,7 +131,7 @@ class FailOver(MovingCameraScene):
 
         # add k8gb
         self.say_scaled("Add k8gb operator")
-        self.play(Group(dep1, dep_text12, pod11, pod12, pod_text12).animate.shift(LEFT*2), Group(dep2, dep_text2, pod21, pod22, pod_text22).animate.shift(LEFT*2))
+        self.play(Group(dep1, dep_text14, pod11, pod12, pod_text12).animate.shift(LEFT*2), Group(dep2, dep_text2, pod21, pod22, pod_text22).animate.shift(LEFT*2))
         k8gb1 = ImageMobject(fr"images/k8gb-logo.png")
         k8gb1.move_to(dep1).shift(RIGHT*4).scale(1.5)
         k8gb2 = ImageMobject(fr"images/k8gb-logo.png")
@@ -180,9 +182,9 @@ class FailOver(MovingCameraScene):
         self.play(FadeIn(detailed_dns))
 
         self.say_zoomed("In fact it's a glue record that enables the zone delegation")
-        self.say_zoomed("Route53 is recursive DNS server delegating the calls for our domain to one of our internal CoreDNS servers")
-        self.say_zoomed("K8gb controller makes sure that CoreDNS contains updated DNS records based on the load balancing strategy")
-        self.say_zoomed("For the sake of simplicity, let's pretend it can directly resolve app.example.com to one of the k8s nodes")
+        self.say_zoomed("Route53 is recursive DNS server delegating the calls for our domain to one of our internal CoreDNS servers", wait=2.7)
+        self.say_zoomed("K8gb controller makes sure that CoreDNS contains updated DNS records based on the load balancing strategy", wait=2.7)
+        self.say_zoomed("For the sake of simplicity, let's pretend it can directly resolve app.example.com to one of the k8s nodes", wait=2.7)
         self.play(FadeOut(detailed_dns))
         self.play(FadeIn(dns_bubble_r1))
         self.play(Restore(self.camera.frame))
@@ -207,7 +209,7 @@ class FailOver(MovingCameraScene):
         dot_c1 = dot_t.copy().move_to(pod11)
         dot_c2 = dot_t.copy().move_to(pod21)
         self.say_scaled("Tux wants to send http request to app.example.com")
-        self.say_scaled("He asks the Route53 about 'app' domain under 'example.com'")
+        self.say_scaled("He asks the Route53 to resolve 'app.example.com'")
         self.play(Transform(dot_moving.set_color(self.cfg["dns_color"]), dot_r.set_color(self.cfg["dns_color"])))
         self.play(Transform(dot_moving.set_color(self.cfg["dns_color"]), dot_t.set_color(self.cfg["dns_color"])))
         self.wait(0.4)
@@ -220,15 +222,20 @@ class FailOver(MovingCameraScene):
         self.play(Transform(dot_moving.set_color(self.cfg["http_color"]), dot_t.set_color(self.cfg["http_color"])), run_time=0.5)
         self.say_scaled("Oh no! The pods on cluster in eu went down.")
 
+        # scale pods on cl1 to 0
+        self.play(FadeOut(VGroup(pod_text12, pod12, pod11)))
+        dep_text13.next_to(dep1, UP)
+        self.play(Transform(dep_text14, dep_text13))
+
         # make tux sad
         sad_tux2 = ImageMobject(fr"images/sad_tux.png")
         sad_tux2.scale(0.7)
         sad_tux2.move_to(self.camera.frame.get_left()).shift(RIGHT*1.5+DOWN*3)
         self.play(Transform(happy_tux2, sad_tux2), run_time=1.5)
 
-        self.say_scaled("Luckily, k8gb controller on cluster 2 kicks in")
-        
-        # todo: display light bulp or shake the icon
+        self.say_scaled("Luckily, k8gb controller on cluster 1 kicks in")
+        self.play(Wiggle(k8gb1))
+
         self.say_scaled("and updates the DNS records to point to cluster 2")
         # change the records in the bubble
         dns_bubble_r3 = Text("192.168.1.1 (node @ us)", color=self.cfg["dns_color"], font_size=17, font=self.cfg["font"])
@@ -252,7 +259,7 @@ class FailOver(MovingCameraScene):
         
         # make tux happy
         self.play(Transform(happy_tux2, happy_tux2_orig), run_time=1.5)
-        self.say_scaled("Cluster in us took over all the communication and tux is happy again")
+        self.say_scaled("Cluster in 'us' took over all the communication and tux is happy again")
         self.wait()
         self.play(
             *[FadeOut(mob)for mob in self.mobjects]
@@ -262,12 +269,12 @@ class FailOver(MovingCameraScene):
         self.wait()
 
 
-    def say_zoomed(self, what, ephemeral=True):
+    def say_zoomed(self, what, ephemeral=True, wait=1.5):
         t = Text(what, color=self.cfg["font_color"], font_size=14, font=self.cfg["font"])
         t.move_to(self.camera.frame.get_right() + self.camera.frame.get_bottom()).shift(UP*4.5+LEFT*(4.8+t.width*0.48))
         self.play(Write(t))
         if ephemeral:
-            self.wait(1)
+            self.wait(wait)
             self.play(FadeOut(t))
         else:
             return t
