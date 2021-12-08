@@ -4,9 +4,9 @@ inputs:
   cmd:
     description: 'Command for that should be run inside the container'
     required: true
-    default: 'manim --version'
+    default: '--version'
 outputs:
-  path: # id of output
+  gif_path:
     description: 'Path of the animation'
 runs:
   using: 'docker'

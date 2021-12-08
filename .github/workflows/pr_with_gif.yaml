@@ -24,7 +24,7 @@ jobs:
         uses: ./
         id: renderer
         with:
-          cmd: manim k8gb.py -qh --format=gif
+          cmd: k8gb.py -qh --format=gif
         # with:
         #   community_ver: true
         #   manim_repo: https://github.com/ManimCommunity/manim

@@ -1,2 +1,4 @@
 FROM manimcommunity/manim:v0.12.0
-# ADD k8gb.py /
+# COPY k8gb.py /
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
