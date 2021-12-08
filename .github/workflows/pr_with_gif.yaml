@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - master
-    paths:
-      - k8gb.py
+    # paths:
+    #   - k8gb.py
   pull_request:
     branches:
       - master
@@ -14,7 +14,7 @@ on:
 
 jobs:
   chanagelog-pr:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Rendering Scenes
@@ -24,17 +24,32 @@ jobs:
           community_ver: true
           source_file: k8gb.py
           args: "-qh --format=gif"
-      - name: Prepend the latest changes to CHANGELOG.md
+
+      - name: Copy the gif file
         run: |
           tree ${{ steps.renderer.outputs.video_path }}
           mv $(find ./media/videos/ -name "*.gif") ./k8gb.gif
           rm -rf ${{ steps.renderer.outputs.video_path }}
+
       - name: Create Pull Request
+        id: cpr
         uses: peter-evans/create-pull-request@v3
         with:
           title: "Update gif animation"
+          body: |
+            :package: :framed_picture: :gift:
+            New gif has been rendered.
+
+            This automated PR was created by [this action][1].
+
+            [1]: https://github.com/k8gb-io/k8gb/actions/runs/${{ github.run_id }}
           branch: gif_update
           delete-branch: true
           base: master
           signoff: true
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check PR
+        run: |
+          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
+          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
