@@ -252,12 +252,14 @@ class FailOver(MovingCameraScene):
         # make tux happy
         self.play(Transform(happy_tux2, happy_tux2_orig), run_time=1.5)
         self.say_scaled("Cluster in 'us' took over all the communication and Tux is happy again")
+        self.say_scaled("Once the pods on cluster 1 are ok, it'll switch the communication back to the eu cluster")
+
         self.wait()
         self.play(
             *[FadeOut(mob)for mob in self.mobjects]
         )
         self.play(FadeIn(ImageMobject(fr"images/k8gb-logo.png").scale(2.5)))
-        self.play(Write(Text("k8gb.io", color=self.cfg["font_color"], font_size=55, font=self.cfg["font"]).shift(DOWN*2)), run_time=1.5)
+        self.play(Write(Text("k8gb.io", color=self.cfg["font_color"], font_size=55, font=self.cfg["font"]).shift(DOWN*2)), run_time=2)
         self.wait()
 
 

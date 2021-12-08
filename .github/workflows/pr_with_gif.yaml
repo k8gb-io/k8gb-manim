@@ -50,7 +50,7 @@ jobs:
 
             This automated PR was created by [this action][1].
 
-            [1]: https://github.com/k8gb-io/k8gb/actions/runs/${{ github.run_id }}
+            [1]: https://github.com/k8gb-io/k8gb-manim/actions/runs/${{ github.run_id }}
           branch: gif_update
           delete-branch: true
           base: master
