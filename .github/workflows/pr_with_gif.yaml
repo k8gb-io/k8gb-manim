@@ -15,18 +15,22 @@ on:
 jobs:
   gif-pr:
     runs-on: ubuntu-latest
+    # container: manimcommunity/manim:v0.12.0
     steps:
       - uses: actions/checkout@v2
       - name: Rendering Scenes
-        uses: manim-kindergarten/manim_action_renderer@master
+        # uses: manim-kindergarten/manim_action_renderer@master
+        uses: docker://manimcommunity/manim:v0.12.0
         id: renderer
-        with:
-          community_ver: true
-          manim_repo: https://github.com/ManimCommunity/manim
-          source_file: k8gb.py
-          scene_names: |
-            FailOver
-          args: "-qh --format=gif"
+        run: |
+          manim k8gb.py -qh --format=gif
+        # with:
+        #   community_ver: true
+        #   manim_repo: https://github.com/ManimCommunity/manim
+        #   source_file: k8gb.py
+        #   scene_names: |
+        #     FailOver
+        #   args: "-qh --format=gif"
 
       - name: Copy the gif file
         run: |
