@@ -1,16 +1,8 @@
 from manim import *
-import itertools as it
-import random
-import numpy as np
-import os
-
-
-red = "ffc1b6"
 
 # camera: https://docs.manim.community/en/stable/examples.html#special-camera-settings
 # interactions / calls https://docs.manim.community/en/stable/examples.html#pointwithtrace
 
-# todo: add app icon </>
 # add k8gb as black box first
 # then zoom in into it and show different components: coredns, externaldns
 
