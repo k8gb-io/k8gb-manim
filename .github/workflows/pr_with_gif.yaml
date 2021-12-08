@@ -1,0 +1,40 @@
+name: PR with gif
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - k8gb.py
+  pull_request:
+    branches:
+      - master
+    paths:
+      - k8gb.py
+
+jobs:
+  chanagelog-pr:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Rendering Scenes
+        uses: manim-kindergarten/manim_action_renderer@master
+        id: renderer
+        with:
+          community_ver: true
+          source_file: k8gb.py
+        args: "-qh --format=gif"
+      - name: Prepend the latest changes to CHANGELOG.md
+        run: |
+          tree ${{ steps.renderer.outputs.video_path }}
+          mv $(find ./media/videos/ -name "*.gif") ./k8gb.gif
+          rm -rf ${{ steps.renderer.outputs.video_path }}
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          title: "Update gif animation"
+          branch: gif_update
+          delete-branch: true
+          base: master
+          signoff: true
+          token: ${{ secrets.GITHUB_TOKEN }}
