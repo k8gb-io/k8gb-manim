@@ -247,7 +247,7 @@ class FailOver(MovingCameraScene):
         self.play(Write(dns_bubble_r3), run_time=0.5)
         # self.play(Write(dns_bubble_r4), run_time=0.5)
 
-        self.say_scaled("When TTL expires, tux creates another DNS request")
+        self.say_scaled("When TTL expires, Tux creates another DNS request")
 
         self.play(Transform(dot_moving.set_color(self.cfg["dns_color"]), dot_r.set_color(self.cfg["dns_color"])))
         self.play(Transform(dot_moving.set_color(self.cfg["dns_color"]), dot_t.set_color(self.cfg["dns_color"])))
@@ -259,7 +259,7 @@ class FailOver(MovingCameraScene):
         
         # make tux happy
         self.play(Transform(happy_tux2, happy_tux2_orig), run_time=1.5)
-        self.say_scaled("Cluster in 'us' took over all the communication and tux is happy again")
+        self.say_scaled("Cluster in 'us' took over all the communication and Tux is happy again")
         self.wait()
         self.play(
             *[FadeOut(mob)for mob in self.mobjects]
