@@ -1,0 +1,15 @@
+name: 'Render manim animation'
+description: 'Manim container image based action to render the videos'
+inputs:
+  cmd:
+    description: 'Command for that should be run inside the container'
+    required: true
+    default: 'manim --version'
+outputs:
+  path: # id of output
+    description: 'Path of the animation'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.cmd }}
