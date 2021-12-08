@@ -24,7 +24,7 @@ jobs:
         uses: ./
         id: renderer
         with:
-          cmd: k8gb.py -qh --format=gif
+          cmd: k8gb.py --progress_bar none -qh --format=gif
         # with:
         #   community_ver: true
         #   manim_repo: https://github.com/ManimCommunity/manim
@@ -33,11 +33,11 @@ jobs:
         #     FailOver
         #   args: "-qh --format=gif"
 
-      - name: Copy the gif file
-        run: |
-          tree ${{ steps.renderer.outputs.video_path }}
-          mv $(find ./media/videos/ -name "*.gif") ./k8gb.gif
-          rm -rf ${{ steps.renderer.outputs.video_path }}
+      # - name: Copy the gif file
+      #   run: |
+      #     tree ${{ steps.renderer.outputs.video_path }}
+      #     mv $(find ./media/videos/ -name "*.gif") ./k8gb.gif
+      #     rm -rf ${{ steps.renderer.outputs.video_path }}
 
       - name: Create Pull Request
         id: cpr
