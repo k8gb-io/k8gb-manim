@@ -7,8 +7,8 @@ tree ./media
 gif=$(find ./media -name "*.gif")
 echo -e "\n\nFound following gif file:"
 ls -lh $gif
-cp $gif /github/workspace/example/k8gb.gif
+cp $gif /github/workspace/example/k8gb-low-q.gif
 echo -e "\n\nIt was copied to:"
-ls -lh /github/workspace/example/k8gb.gif
+ls -lh /github/workspace/example/k8gb-low-q.gif
 # ls -lh ./media/videos/k8gb/*/partial_movie_files/FailOver/
 echo "::set-output name=gif_path::$gif"

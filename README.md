@@ -20,3 +20,9 @@ manim k8gb.py -gh --format=gif
 
 ![k8gb simple animation](https://github.com/jkremser/k8gb-manim/raw/master/example/k8gb.gif)
 
+### Up-to-date version in lower quality
+
+rendered with 10fps and low-quality(480p):
+![k8gb simple animation(low-q)](https://github.com/jkremser/k8gb-manim/raw/master/example/k8gb-low-q.gif)
+
+This low-quality version of gif is being updated by the gh action in this repo.

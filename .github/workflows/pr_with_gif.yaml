@@ -22,7 +22,17 @@ jobs:
         id: renderer
         with:
           # cmd: k8gb.py Dummy --progress_bar none -ql --format=gif --fps 1
-          cmd: k8gb.py FailOver --progress_bar none -ql --format=gif --fps 2
+          cmd: k8gb.py FailOver --progress_bar none -ql --format=gif --fps 10
+      - name: Create commit
+        id: commit
+        run: |
+          git config user.name 'jkremser'
+          git config user.email 'jiri.kremser@gmail.com'
+          git add -A
+          git commit -s -m "Update low-quality gif file"
+          sha=$(git rev-parse HEAD)
+          echo "::set-output name=sha::${sha}"
+          echo ${sha}
 
       - name: Create Pull Request
         id: cpr
@@ -32,6 +42,8 @@ jobs:
           body: |
             :package: :framed_picture: :gift:
             New gif has been rendered.
+
+            ![preview](https://github.com/k8gb-io/k8gb-manim/raw/${{ steps.commit.outputs.sha }}/example/k8gb-low-q.gif)
 
             This automated PR was created by [this action][1].
 
