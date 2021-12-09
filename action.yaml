@@ -1,8 +1,10 @@
 name: 'Render manim animation'
-description: 'Manim container image based action to render the videos'
+description: |
+  Manim container image based action to render the videos. 
+  This action is taylored for k8gb needs and it would require more love to work as a general gh action for ManimCE.
 inputs:
   cmd:
-    description: 'Command for that should be run inside the container'
+    description: 'Command for that should be run inside the container (passed to entrypoint.sh that prepends manim to it)'
     required: true
     default: '--version'
 outputs:
