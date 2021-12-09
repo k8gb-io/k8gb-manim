@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - master
-    # paths:
-    #   - k8gb.py
+    paths:
+      - k8gb.py
   pull_request:
     branches:
       - master
