@@ -41,7 +41,7 @@ jobs:
           title: "Update gif animation"
           body: |
             :package: :framed_picture: :gift:
-            New gif has been rendered.
+            New gif(t) has been rendered.
 
             ![preview](https://github.com/k8gb-io/k8gb-manim/raw/${{ steps.commit.outputs.sha }}/example/k8gb-low-q.gif)
 
