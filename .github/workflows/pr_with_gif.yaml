@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - master
-    paths:
-      - k8gb.py
+    # paths:
+    #   - k8gb.py
   pull_request:
     branches:
       - master
@@ -22,7 +22,7 @@ jobs:
         id: renderer
         with:
           # cmd: k8gb.py Dummy --progress_bar none -ql --format=gif --fps 1
-          cmd: k8gb.py FailOver --progress_bar none -qh --format=gif --fps 30
+          cmd: k8gb.py FailOver --progress_bar none -ql --format=gif --fps 2
 
       - name: Create Pull Request
         id: cpr
