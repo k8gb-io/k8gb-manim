@@ -24,7 +24,8 @@ jobs:
         uses: ./
         id: renderer
         with:
-          cmd: k8gb.py --progress_bar none -qh --format=gif
+          cmd: k8gb.py Dummy --progress_bar none -ql --format=gif --fps 1
+          # cmd: k8gb.py FailOver --progress_bar none -qh --format=gif
         # with:
         #   community_ver: true
         #   manim_repo: https://github.com/ManimCommunity/manim
