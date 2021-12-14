@@ -69,12 +69,17 @@ class FailOver(MovingCameraScene):
         dot2 = dot1.copy().move_to(pod11)
         
         user_interaction = self.say("User sends HTTP requests to app.example.com", False)
-        # transformation group
-        self.play(Transform(dot1, dot2))
-        self.play(Transform(dot1, dot3))
+        # first interactions
+        tail = TracedPath(dot1.get_center, stroke_color=http_c, stroke_width=2.5, dissipating_time=0.2, stroke_opacity=[1, 0])
+        self.add(dot1, tail)
+        self.play(dot1.animate.move_to(dot2))
+        tail.set_stroke(opacity=[0, 1])
+        self.play(dot1.animate.move_to(dot3))
         self.wait(0.7)
-        self.play(Transform(dot1, dot2))
-        self.play(Transform(dot1, dot3))
+        tail.set_stroke(opacity=[1, 0])
+        self.play(dot1.animate.move_to(dot2))
+        tail.set_stroke(opacity=[0, 1])
+        self.play(dot1.animate.move_to(dot3))
         self.play(FadeOut(user_interaction))
 
         t = self.say("Oh no! Application went down", False)
@@ -84,7 +89,8 @@ class FailOver(MovingCameraScene):
         self.play(FadeOut(pod11), run_time=0.3)
         dep_text13 = Text("App Deployment (0 pods)", color=font_c, font_size=20, font=font).next_to(dep1, UP)
         self.play(Transform(dep_text12, dep_text13), run_time=0.7)
-        self.play(Transform(dot1, dot2))
+        tail.set_stroke(opacity=[1, 0])
+        self.play(dot1.animate.move_to(dot2))
 
         sad_tux = ImageMobject(fr"images/sad_tux.png")
         sad_tux.set_height(1.3) # deprecated
@@ -202,21 +208,34 @@ class FailOver(MovingCameraScene):
 
         dot_t = dot1.scale(2).move_to(happy_tux2.get_edge_center(RIGHT)).copy()
         dot_moving = dot_t.copy()
+        tail2 = TracedPath(dot_moving.get_center, stroke_color=dns_c, stroke_width=5, dissipating_time=0.2, stroke_opacity=[1, 0])
         dot_r = dot_t.copy().move_to(route)
         dot_c1 = dot_t.copy().move_to(pod11)
         dot_c2 = dot_t.copy().move_to(pod21)
         self.say_scaled("Tux wants to send http request to app.example.com")
         self.say_scaled("He asks the Route53 to resolve 'app.example.com'")
-        self.play(Transform(dot_moving.set_color(dns_c), dot_r.set_color(dns_c)))
-        self.play(Transform(dot_moving.set_color(dns_c), dot_t.set_color(dns_c)))
+        dot_moving.set_color(dns_c)
+        self.add(dot_moving, tail2)
+        self.play(dot_moving.animate.move_to(dot_r))
+        tail2.set_stroke(opacity=[0, 1])
+        self.play(dot_moving.animate.move_to(dot_t))
+
         self.wait(0.4)
         self.say_scaled("For the next 30 seconds it's 192.168.0.1")
-        self.play(Transform(dot_moving.set_color(http_c), dot_c1.set_color(http_c)), run_time=0.5)
-        self.play(Transform(dot_moving.set_color(http_c), dot_t.set_color(http_c)), run_time=0.5)
-        self.play(Transform(dot_moving.set_color(http_c), dot_c1.set_color(http_c)), run_time=0.5)
-        self.play(Transform(dot_moving.set_color(http_c), dot_t.set_color(http_c)), run_time=0.5)
-        self.play(Transform(dot_moving.set_color(http_c), dot_c1.set_color(http_c)), run_time=0.5)
-        self.play(Transform(dot_moving.set_color(http_c), dot_t.set_color(http_c)), run_time=0.5)
+        tail2.set_stroke(opacity=[1, 0], color=http_c)
+        dot_moving.set_color(http_c)
+        dot_rt = 0.5
+        self.play(dot_moving.animate.move_to(dot_c1), run_time=dot_rt)
+        tail2.set_stroke(opacity=[0, 1])
+        self.play(dot_moving.animate.move_to(dot_t), run_time=dot_rt)
+        tail2.set_stroke(opacity=[1, 0])
+        self.play(dot_moving.animate.move_to(dot_c1), run_time=dot_rt)
+        tail2.set_stroke(opacity=[0, 1])
+        self.play(dot_moving.animate.move_to(dot_t), run_time=dot_rt)
+        tail2.set_stroke(opacity=[1, 0])
+        self.play(dot_moving.animate.move_to(dot_c1), run_time=dot_rt)
+        tail2.set_stroke(opacity=[0, 1])
+        self.play(dot_moving.animate.move_to(dot_t), run_time=dot_rt)
         self.say_scaled("Oh no! The pods on cluster in eu went down.")
 
         # scale pods on cl1 to 0
@@ -247,14 +266,23 @@ class FailOver(MovingCameraScene):
         # self.play(Write(dns_bubble_r4), run_time=0.5)
 
         self.say_scaled("When TTL expires, Tux creates another DNS request")
-
-        self.play(Transform(dot_moving.set_color(dns_c), dot_r.set_color(dns_c)))
-        self.play(Transform(dot_moving.set_color(dns_c), dot_t.set_color(dns_c)))
+        dot_rt = 0.8
+        dot_moving.set_color(dns_c)
+        tail2.set_stroke(opacity=[1, 0], color=dns_c)
+        self.play(dot_moving.animate.move_to(dot_r), run_time=dot_rt)
+        tail2.set_stroke(opacity=[0, 1])
+        self.play(dot_moving.animate.move_to(dot_t), run_time=dot_rt)
+        
         self.say_scaled("and starts communicating with the correct cluster")
-        self.play(Transform(dot_moving.set_color(http_c), dot_c2.set_color(http_c)))
-        self.play(Transform(dot_moving.set_color(http_c), dot_t.set_color(http_c)))
-        self.play(Transform(dot_moving.set_color(http_c), dot_c2.set_color(http_c)))
-        self.play(Transform(dot_moving.set_color(http_c), dot_t.set_color(http_c)))
+        dot_moving.set_color(http_c)
+        tail2.set_stroke(opacity=[1, 0], color=http_c)
+        self.play(dot_moving.animate.move_to(dot_c2), run_time=dot_rt)
+        tail2.set_stroke(opacity=[0, 1])
+        self.play(dot_moving.animate.move_to(dot_t), run_time=dot_rt)
+        tail2.set_stroke(opacity=[1, 0])
+        self.play(dot_moving.animate.move_to(dot_c2), run_time=dot_rt)
+        tail2.set_stroke(opacity=[0, 1])
+        self.play(dot_moving.animate.move_to(dot_t), run_time=dot_rt)
         
         # make tux happy
         self.play(Transform(happy_tux2, happy_tux2_orig), run_time=1.5)
