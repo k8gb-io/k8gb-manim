@@ -22,11 +22,11 @@ class FailOver(MovingCameraScene):
 
     def construct(self):
         self.camera.background_color = WHITE
-        self.pods()
+        self.play_all()
         # self.display_images()
         # self.speech_bubble()
 
-    def pods(self):
+    def play_all(self):
         self.camera.frame.save_state()
         dns_c = self.cfg["dns_color"]
         font_c = self.cfg["font_color"]
@@ -220,9 +220,11 @@ class FailOver(MovingCameraScene):
         self.say_scaled("Oh no! The pods on cluster in eu went down.")
 
         # scale pods on cl1 to 0
-        self.play(FadeOut(VGroup(pod_text12, pod12, pod11)))
+        pod_text12.add_updater(lambda x: x.move_to(pod12.get_center()))
+        self.play(pod12.animate.move_to(pod11), run_time=0.4)
+        self.play(FadeOut(pod_text12), run_time=0.3)
         dep_text13.next_to(dep1, UP)
-        self.play(Transform(dep_text14, dep_text13))
+        self.play(FadeOut(VGroup(pod11, pod12)), Transform(dep_text14, dep_text13))
 
         # make tux sad
         sad_tux2 = ImageMobject(fr"images/sad_tux.png")
