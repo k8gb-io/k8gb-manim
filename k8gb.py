@@ -1,4 +1,5 @@
 from manim import *
+import os
 
 # camera: https://docs.manim.community/en/stable/examples.html#special-camera-settings
 # interactions / calls https://docs.manim.community/en/stable/examples.html#pointwithtrace
@@ -11,6 +12,7 @@ from manim import *
 class FailOver(MovingCameraScene):
     # color scheme: https://www.reddit.com/r/manim/comments/dzxoen/predefined_color_scheme/
     cfg = {
+        "no_text": os.getenv('NO_TEXT', "False") == "True",
         "font": "Noto Sans",
         "code_font": "Arial Rounded MT Bold",
         "font_color": BLACK,
@@ -299,6 +301,8 @@ class FailOver(MovingCameraScene):
 
 
     def say_zoomed(self, what, ephemeral=True, wait=1.5):
+        if self.cfg["no_text"]:
+            return Text("")
         t = Text(what, color=self.cfg["font_color"], font_size=14, font=self.cfg["font"])
         t.move_to(self.camera.frame.get_right() + self.camera.frame.get_bottom()).shift(UP*4.5+LEFT*(4.8+t.width*0.48))
         self.play(Write(t))
@@ -309,6 +313,8 @@ class FailOver(MovingCameraScene):
             return t
 
     def say(self, what, ephemeral=True):
+        if self.cfg["no_text"]:
+            return Text("")
         t = Text(what, color=self.cfg["font_color"], font_size=23, font=self.cfg["font"])
         t.to_edge(DR, buff=0.5)
         self.play(Write(t))
@@ -319,6 +325,8 @@ class FailOver(MovingCameraScene):
             return t
 
     def say_scaled(self, what, ephemeral=True):
+        if self.cfg["no_text"]:
+            return Text("")
         t = Text(what, color=self.cfg["font_color"], font_size=46, font=self.cfg["font"])
         t.move_to(self.camera.frame.get_right() + self.camera.frame.get_bottom()).shift(UP*1.5+LEFT*(t.width*0.6))
         self.play(Write(t))
