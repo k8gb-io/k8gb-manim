@@ -3,6 +3,9 @@
 These animations use the Manim [community version](https://www.manim.community/) of the library ([code](https://github.com/ManimCommunity/manim)),
 you can install it by following the instructions for your OS on their web site.
 
+## Font
+It requires installation of [Noto Sans](https://fonts.google.com/noto/specimen/Noto+Sans) font.
+
 ## Rendering the animations
 
 ```bash
