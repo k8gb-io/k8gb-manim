@@ -17,6 +17,9 @@ manim k8gb.py -qk
 
 # for high-quality gif
 manim k8gb.py -gh --format=gif
+
+# etc
+manim k8gb.py FailOver --progress_bar none -ql --format=gif --fps 20
 ```
 
 ## Example
