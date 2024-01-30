@@ -100,7 +100,7 @@ class FailOver(MovingCameraScene):
         self.play(Transform(happy_tux, sad_tux))
         self.play(FadeOut(t,dot1), run_time=0.5)
         self.say("Let's see how k8gb can help here")
-        self.say("First we need to introduce some redundancy, so let's scale up")
+        self.say("First we need to introduce some redundancy, so let's scale out")
         self.play(FadeOut(happy_tux), run_time=0.5)
 
         # zoom out
